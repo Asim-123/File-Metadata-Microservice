@@ -4,6 +4,17 @@ const path = require('path');
 const app = express();
 const upload = multer({ dest: 'uploads/' });
 
+// Add CORS headers
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'POST, OPTIONS, GET');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
 // Serve static HTML form
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
