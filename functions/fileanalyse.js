@@ -7,7 +7,7 @@ exports.handler = (event, context, callback) => {
       statusCode: 200,
       headers: {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Headers': 'Content-Type, Accept',
         'Access-Control-Allow-Methods': 'POST, OPTIONS, GET'
       },
       body: ''
@@ -21,7 +21,7 @@ exports.handler = (event, context, callback) => {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        'Access-Control-Allow-Headers': 'Content-Type, Accept'
       },
       body: JSON.stringify({ error: 'Method Not Allowed' })
     });
@@ -52,7 +52,7 @@ exports.handler = (event, context, callback) => {
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type'
+          'Access-Control-Allow-Headers': 'Content-Type, Accept'
         },
         body: JSON.stringify({ error: 'No file uploaded' })
       });
@@ -62,7 +62,7 @@ exports.handler = (event, context, callback) => {
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Headers': 'Content-Type'
+          'Access-Control-Allow-Headers': 'Content-Type, Accept'
         },
         body: JSON.stringify(fileInfo)
       });
