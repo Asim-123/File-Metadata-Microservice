@@ -1,46 +1,60 @@
-const multer = require('multer');
-const upload = multer();
+const busboy = require('busboy');
 
 exports.handler = (event, context, callback) => {
+  // Check if it's a POST request
   if (event.httpMethod !== 'POST') {
     return callback(null, {
       statusCode: 405,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      },
       body: JSON.stringify({ error: 'Method Not Allowed' })
     });
   }
 
-  // Netlify Functions do not natively support multipart/form-data, so we need to parse it manually
-  const busboy = require('busboy');
+  // Parse multipart form data
   const bb = busboy({ headers: event.headers });
   let fileInfo = null;
 
-  return new Promise((resolve, reject) => {
-    bb.on('file', (fieldname, file, info) => {
-      let size = 0;
-      file.on('data', (data) => {
-        size += data.length;
-      });
-      file.on('end', () => {
-        fileInfo = {
-          name: info.filename,
-          type: info.mimeType,
-          size: size
-        };
-      });
+  bb.on('file', (fieldname, file, info) => {
+    let size = 0;
+    file.on('data', (data) => {
+      size += data.length;
     });
-    bb.on('finish', () => {
-      if (!fileInfo) {
-        resolve({
-          statusCode: 400,
-          body: JSON.stringify({ error: 'No file uploaded' })
-        });
-      } else {
-        resolve({
-          statusCode: 200,
-          body: JSON.stringify(fileInfo)
-        });
-      }
+    file.on('end', () => {
+      fileInfo = {
+        name: info.filename,
+        type: info.mimeType,
+        size: size
+      };
     });
-    bb.end(Buffer.from(event.body, event.isBase64Encoded ? 'base64' : 'utf8'));
   });
+
+  bb.on('finish', () => {
+    if (!fileInfo) {
+      callback(null, {
+        statusCode: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        },
+        body: JSON.stringify({ error: 'No file uploaded' })
+      });
+    } else {
+      callback(null, {
+        statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        },
+        body: JSON.stringify(fileInfo)
+      });
+    }
+  });
+
+  bb.end(Buffer.from(event.body, event.isBase64Encoded ? 'base64' : 'utf8'));
 }; 
