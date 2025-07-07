@@ -19,15 +19,27 @@
   <script>
     const form = document.getElementById('uploadForm');
     const result = document.getElementById('result');
+    
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = new FormData(form);
-      const res = await fetch('/api/fileanalyse', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      result.textContent = JSON.stringify(data, null, 2);
+      
+      try {
+        const formData = new FormData(form);
+        const res = await fetch('/api/fileanalyse', {
+          method: 'POST',
+          body: formData
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        result.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+      } catch (error) {
+        result.innerHTML = '<p style="color: red;">Error: ' + error.message + '</p>';
+        console.error('Error:', error);
+      }
     });
   </script>
 </body>

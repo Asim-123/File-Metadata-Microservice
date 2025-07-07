@@ -1,6 +1,19 @@
 const busboy = require('busboy');
 
 exports.handler = (event, context, callback) => {
+  // Handle CORS preflight requests
+  if (event.httpMethod === 'OPTIONS') {
+    return callback(null, {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      },
+      body: ''
+    });
+  }
+
   // Check if it's a POST request
   if (event.httpMethod !== 'POST') {
     return callback(null, {
